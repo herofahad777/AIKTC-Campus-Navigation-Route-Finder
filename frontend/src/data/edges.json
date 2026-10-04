@@ -1,0 +1,58 @@
+[
+  {
+    "from": "gate",
+    "to": "library"
+  },
+  {
+    "from": "gate",
+    "to": "admin"
+  },
+  {
+    "from": "admin",
+    "to": "library"
+  },
+  {
+    "from": "admin",
+    "to": "cafeteria"
+  },
+  {
+    "from": "gate",
+    "to": "sports_arena"
+  },
+  {
+    "from": "admin",
+    "to": "sports_arena"
+  },
+  {
+    "from": "library",
+    "to": "cs_dept"
+  },
+  {
+    "from": "cs_dept",
+    "to": "eng_quad"
+  },
+  {
+    "from": "eng_quad",
+    "to": "hostel_north"
+  },
+  {
+    "from": "science_complex",
+    "to": "hostel_north"
+  },
+  {
+    "from": "cafeteria",
+    "to": "auditorium"
+  },
+  {
+    "from": "auditorium",
+    "to": "science_complex"
+  },
+  {
+    "from": "cafeteria",
+    "to": "student_center"
+  },
+  {
+    "from": "admin",
+    "to": "student_center"
+  }
+]

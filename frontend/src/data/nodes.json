@@ -1,0 +1,79 @@
+[
+  {
+    "id": "gate",
+    "name": "Main Campus Gate",
+    "x": 0,
+    "y": 0,
+    "z": 25
+  },
+  {
+    "id": "admin",
+    "name": "Administration Block",
+    "x": 0,
+    "y": 0,
+    "z": 10
+  },
+  {
+    "id": "library",
+    "name": "Library",
+    "x": 10,
+    "y": 0,
+    "z": 5
+  },
+  {
+    "id": "cs_dept",
+    "name": "Computer Science & IT Block",
+    "x": 20,
+    "y": 0,
+    "z": -10
+  },
+  {
+    "id": "eng_quad",
+    "name": "Engineering Quadrangle",
+    "x": 12,
+    "y": 0,
+    "z": -18
+  },
+  {
+    "id": "science_complex",
+    "name": "Science Complex",
+    "x": -18,
+    "y": 0,
+    "z": -15
+  },
+  {
+    "id": "cafeteria",
+    "name": "Campus Cafeteria",
+    "x": -8,
+    "y": 0,
+    "z": 2
+  },
+  {
+    "id": "student_center",
+    "name": "Student Activity Center (L2)",
+    "x": -14,
+    "y": 4,
+    "z": 12
+  },
+  {
+    "id": "sports_arena",
+    "name": "Sports Arena & Pavilion",
+    "x": 24,
+    "y": 0,
+    "z": 15
+  },
+  {
+    "id": "hostel_north",
+    "name": "North Residence Hall",
+    "x": -5,
+    "y": 0,
+    "z": -28
+  },
+  {
+    "id": "auditorium",
+    "name": "Main Auditorium",
+    "x": -12,
+    "y": 1,
+    "z": -2
+  }
+]
