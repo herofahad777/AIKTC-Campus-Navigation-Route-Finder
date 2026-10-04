@@ -56,7 +56,7 @@ export const Scene: React.FC<SceneProps> = ({
   return (
     <div className="relative w-full h-full bg-slate-950 overflow-hidden">
       <Canvas
-        camera={{ position: [30, 25, 35], fov: 45, near: 0.1, far: 1000 }}
+        camera={{ position: [35, 45, 55], fov: 45, near: 0.1, far: 1000 }}
         shadows
         onPointerDown={(e) => {
           // Deselect when clicking on empty canvas background
