@@ -1,0 +1,178 @@
+[
+  {
+    "source": "gate",
+    "destination": "hostel_north",
+    "found": true,
+    "path": ["gate", "library", "cs_dept", "eng_quad", "hostel_north"],
+    "hops": 4,
+    "visited": 5
+  },
+  {
+    "source": "hostel_north",
+    "destination": "gate",
+    "found": true,
+    "path": ["hostel_north", "eng_quad", "cs_dept", "library", "gate"],
+    "hops": 4,
+    "visited": 5
+  },
+  {
+    "source": "gate",
+    "destination": "science_complex",
+    "found": true,
+    "path": ["gate", "admin", "cafeteria", "auditorium", "science_complex"],
+    "hops": 4,
+    "visited": 5
+  },
+  {
+    "source": "science_complex",
+    "destination": "gate",
+    "found": true,
+    "path": ["science_complex", "auditorium", "cafeteria", "admin", "gate"],
+    "hops": 4,
+    "visited": 5
+  },
+  {
+    "source": "gate",
+    "destination": "library",
+    "found": true,
+    "path": ["gate", "library"],
+    "hops": 1,
+    "visited": 2
+  },
+  {
+    "source": "library",
+    "destination": "gate",
+    "found": true,
+    "path": ["library", "gate"],
+    "hops": 1,
+    "visited": 2
+  },
+  {
+    "source": "gate",
+    "destination": "admin",
+    "found": true,
+    "path": ["gate", "admin"],
+    "hops": 1,
+    "visited": 2
+  },
+  {
+    "source": "admin",
+    "destination": "gate",
+    "found": true,
+    "path": ["admin", "gate"],
+    "hops": 1,
+    "visited": 2
+  },
+  {
+    "source": "gate",
+    "destination": "cs_dept",
+    "found": true,
+    "path": ["gate", "library", "cs_dept"],
+    "hops": 2,
+    "visited": 3
+  },
+  {
+    "source": "cs_dept",
+    "destination": "gate",
+    "found": true,
+    "path": ["cs_dept", "library", "gate"],
+    "hops": 2,
+    "visited": 3
+  },
+  {
+    "source": "gate",
+    "destination": "sports_arena",
+    "found": true,
+    "path": ["gate", "sports_arena"],
+    "hops": 1,
+    "visited": 2
+  },
+  {
+    "source": "sports_arena",
+    "destination": "gate",
+    "found": true,
+    "path": ["sports_arena", "gate"],
+    "hops": 1,
+    "visited": 2
+  },
+  {
+    "source": "sports_arena",
+    "destination": "cs_dept",
+    "found": true,
+    "path": ["sports_arena", "admin", "library", "cs_dept"],
+    "hops": 3,
+    "visited": 4
+  },
+  {
+    "source": "cs_dept",
+    "destination": "sports_arena",
+    "found": true,
+    "path": ["cs_dept", "library", "admin", "sports_arena"],
+    "hops": 3,
+    "visited": 4
+  },
+  {
+    "source": "student_center",
+    "destination": "eng_quad",
+    "found": true,
+    "path": ["student_center", "admin", "library", "cs_dept", "eng_quad"],
+    "hops": 4,
+    "visited": 5
+  },
+  {
+    "source": "eng_quad",
+    "destination": "student_center",
+    "found": true,
+    "path": ["eng_quad", "cs_dept", "library", "admin", "student_center"],
+    "hops": 4,
+    "visited": 5
+  },
+  {
+    "source": "admin",
+    "destination": "science_complex",
+    "found": true,
+    "path": ["admin", "cafeteria", "auditorium", "science_complex"],
+    "hops": 3,
+    "visited": 4
+  },
+  {
+    "source": "science_complex",
+    "destination": "admin",
+    "found": true,
+    "path": ["science_complex", "auditorium", "cafeteria", "admin"],
+    "hops": 3,
+    "visited": 4
+  },
+  {
+    "source": "library",
+    "destination": "hostel_north",
+    "found": true,
+    "path": ["library", "cs_dept", "eng_quad", "hostel_north"],
+    "hops": 3,
+    "visited": 4
+  },
+  {
+    "source": "hostel_north",
+    "destination": "library",
+    "found": true,
+    "path": ["hostel_north", "eng_quad", "cs_dept", "library"],
+    "hops": 3,
+    "visited": 4
+  },
+  {
+    "source": "cafeteria",
+    "destination": "hostel_north",
+    "found": true,
+    "path": ["cafeteria", "auditorium", "science_complex", "hostel_north"],
+    "hops": 3,
+    "visited": 4
+  },
+  {
+    "source": "hostel_north",
+    "destination": "cafeteria",
+    "found": true,
+    "path": ["hostel_north", "science_complex", "auditorium", "cafeteria"],
+    "hops": 3,
+    "visited": 4
+  }
+]

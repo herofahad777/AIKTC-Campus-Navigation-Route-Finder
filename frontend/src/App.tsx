@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   Layers,
   MapPin,
@@ -14,8 +14,12 @@ import {
   Maximize2,
   Info,
   ShieldAlert,
+  Route,
+  Navigation,
+  Flag,
 } from 'lucide-react';
 import { Scene } from './components/Scene';
+import { RouteSelectorPanel } from './components/RouteSelectorPanel';
 import rawNodes from './data/nodes.json';
 import rawEdges from './data/edges.json';
 import {
@@ -26,6 +30,8 @@ import {
   resolveEdgeEndpoints,
   validateGraphData,
 } from './lib/graphViewerUtils';
+import { requestRoute, clearRoute, RouteResult } from './lib/engineBridge';
+import { useRouteAnimation } from './hooks/useRouteAnimation';
 
 export const App: React.FC = () => {
   const nodes = rawNodes as NodeItem[];
@@ -38,6 +44,18 @@ export const App: React.FC = () => {
   const [showGrid, setShowGrid] = useState(true);
   const [showAxes, setShowAxes] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
+
+  // Left Sidebar Mode: 'locations' or 'route'
+  const [leftTab, setLeftTab] = useState<'locations' | 'route'>('locations');
+
+  // Route Navigation State (Strictly decoupled from traversal algorithms per RULES.md)
+  const [sourceId, setSourceId] = useState<string | null>('gate');
+  const [destinationId, setDestinationId] = useState<string | null>('hostel_north');
+  const [isEngineLoading, setIsEngineLoading] = useState(false);
+  const [routeResult, setRouteResult] = useState<RouteResult | null>(null);
+
+  // Sequential 3D Animation Hook (Visualizes path returned by engine only)
+  const animationState = useRouteAnimation(routeResult?.path, 400);
 
   // Derived counts and visualization data (pure visual mapping, NO traversal)
   const nodeCount = useMemo(() => countNodes(nodes), [nodes]);
@@ -67,6 +85,44 @@ export const App: React.FC = () => {
       (n) => n.name.toLowerCase().includes(q) || n.id.toLowerCase().includes(q)
     );
   }, [nodes, searchQuery]);
+
+  // Query Route from Engine Adapter (Frontend generates route_request.json and awaits engine route_result.json)
+  const handleFindRoute = useCallback(async () => {
+    if (!sourceId || !destinationId) return;
+    setIsEngineLoading(true);
+    try {
+      const res = await requestRoute({ source: sourceId, destination: destinationId });
+      setRouteResult(res);
+      setLeftTab('route');
+      if (res.found && res.path.length > 1) {
+        setTimeout(() => {
+          animationState.play();
+        }, 250);
+      }
+    } finally {
+      setIsEngineLoading(false);
+    }
+  }, [sourceId, destinationId, animationState]);
+
+  // Clear Route
+  const handleClearRoute = useCallback(() => {
+    clearRoute();
+    setRouteResult(null);
+    animationState.reset();
+  }, [animationState]);
+
+  // Import custom route_result.json produced by routefinder.exe
+  const handleImportRouteResult = useCallback((result: RouteResult) => {
+    setRouteResult(result);
+    if (result.source) setSourceId(result.source);
+    if (result.destination) setDestinationId(result.destination);
+    setLeftTab('route');
+    if (result.found && result.path.length > 1) {
+      setTimeout(() => {
+        animationState.play();
+      }, 250);
+    }
+  }, [animationState]);
 
   return (
     <div className="flex flex-col h-screen w-screen bg-slate-950 text-slate-100 overflow-hidden font-sans">
@@ -99,61 +155,53 @@ export const App: React.FC = () => {
                 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/60 shadow-[0_0_12px_rgba(245,158,11,0.25)]'
                 : 'bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700'
             }`}
-            title="Toggle Debug Placement Mode (Always-visible labels, grid, coordinate inspect)"
+            title="Toggle Debug Placement Mode"
           >
-            <Crosshair className={`w-3.5 h-3.5 ${debugMode ? 'text-amber-400 animate-spin' : ''}`} />
-            <span>Debug Placement {debugMode ? 'ON' : 'OFF'}</span>
+            <Crosshair className={`w-3.5 h-3.5 ${debugMode ? 'text-amber-400' : 'text-slate-400'}`} />
+            <span>{debugMode ? 'Debug Placement ON' : 'Debug Placement OFF'}</span>
           </button>
 
-          {/* Grid Toggle */}
-          <button
-            onClick={() => setShowGrid(!showGrid)}
-            className={`p-1.5 rounded-md border text-xs transition cursor-pointer ${
-              showGrid
-                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
-            }`}
-            title="Toggle Ground Grid"
-          >
-            <Grid3X3 className="w-4 h-4" />
-          </button>
-
-          {/* Axes Toggle */}
-          <button
-            onClick={() => setShowAxes(!showAxes)}
-            className={`p-1.5 rounded-md border text-xs transition cursor-pointer ${
-              showAxes
-                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
-            }`}
-            title="Toggle Origin Axes (+X East, +Y Up, +Z South)"
-          >
-            <Layers className="w-4 h-4" />
-          </button>
-
-          {/* Labels Toggle */}
-          <button
-            onClick={() => setShowLabels(!showLabels)}
-            className={`p-1.5 rounded-md border text-xs transition cursor-pointer ${
-              showLabels
-                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
-                : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
-            }`}
-            title="Toggle Node 3D Labels"
-          >
-            {showLabels ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-          </button>
+          {/* Quick Visibility Toggles */}
+          <div className="flex items-center bg-slate-950/80 border border-slate-800 rounded-md p-1 gap-1">
+            <button
+              onClick={() => setShowGrid(!showGrid)}
+              title={showGrid ? 'Hide Grid' : 'Show Grid'}
+              className={`p-1.5 rounded hover:bg-slate-800 transition ${
+                showGrid ? 'text-cyan-400' : 'text-slate-600'
+              }`}
+            >
+              <Grid3X3 className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setShowAxes(!showAxes)}
+              title={showAxes ? 'Hide Axes' : 'Show Axes'}
+              className={`p-1.5 rounded hover:bg-slate-800 transition ${
+                showAxes ? 'text-emerald-400' : 'text-slate-600'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setShowLabels(!showLabels)}
+              title={showLabels ? 'Hide Labels' : 'Show Labels'}
+              className={`p-1.5 rounded hover:bg-slate-800 transition ${
+                showLabels ? 'text-amber-400' : 'text-slate-600'
+              }`}
+            >
+              {showLabels ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* THREE PANEL MAIN WORKSPACE */}
+      {/* 3-PANEL APPLICATION LAYOUT */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* =========================================================================
-            LEFT PANEL: Stats, Search, Node List, Selection
+            LEFT PANEL: Stats, Search, Node List OR Route Finder
            ========================================================================= */}
-        <aside className="w-80 border-r border-slate-800 bg-slate-900/70 backdrop-blur-md flex flex-col shrink-0 z-10">
+        <aside className="w-84 border-r border-slate-800 bg-slate-900/70 backdrop-blur-md flex flex-col shrink-0 z-10">
           {/* Quick Metrics */}
-          <div className="p-4 border-b border-slate-800 grid grid-cols-2 gap-2">
+          <div className="p-4 border-b border-slate-800 grid grid-cols-2 gap-2 shrink-0">
             <div className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800">
               <div className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold flex items-center gap-1">
                 <MapPin className="w-3 h-3 text-cyan-400" />
@@ -171,65 +219,129 @@ export const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="p-3 border-b border-slate-800/80">
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search campus nodes..."
-                className="w-full pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-md text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/70"
+          {/* Left Panel Tabs: Locations vs Route Finder */}
+          <div className="flex border-b border-slate-800 bg-slate-950/60 p-1 gap-1 shrink-0">
+            <button
+              onClick={() => setLeftTab('locations')}
+              className={`flex-1 py-1.5 px-3 rounded text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                leftTab === 'locations'
+                  ? 'bg-slate-800 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Locations</span>
+            </button>
+            <button
+              onClick={() => setLeftTab('route')}
+              className={`flex-1 py-1.5 px-3 rounded text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                leftTab === 'route'
+                  ? 'bg-slate-800 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+              }`}
+            >
+              <Route className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Route Finder</span>
+              {routeResult?.found && (
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
+              )}
+            </button>
+          </div>
+
+          {/* TAB 1: Locations Directory */}
+          {leftTab === 'locations' && (
+            <div className="flex-1 flex flex-col min-h-0">
+              {/* Search Bar */}
+              <div className="p-3 border-b border-slate-800/80 shrink-0">
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search campus nodes..."
+                    className="w-full pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-md text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/70"
+                  />
+                </div>
+              </div>
+
+              {/* Node List Header */}
+              <div className="px-4 py-2 border-b border-slate-800/60 bg-slate-950/40 flex items-center justify-between text-[11px] font-semibold text-slate-400 uppercase shrink-0">
+                <span>Campus Locations ({filteredNodes.length})</span>
+                <span className="text-[10px] font-mono text-slate-500">[X, Y, Z]</span>
+              </div>
+
+              {/* Node Scrollable List */}
+              <div className="flex-1 overflow-y-auto divide-y divide-slate-800/40">
+                {filteredNodes.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-slate-500">No nodes match search.</div>
+                ) : (
+                  filteredNodes.map((node) => {
+                    const isSelected = node.id === selectedNodeId;
+                    const isSource = node.id === sourceId;
+                    const isDest = node.id === destinationId;
+
+                    return (
+                      <button
+                        key={node.id}
+                        data-testid={`node-item-${node.id}`}
+                        onClick={() => setSelectedNodeId(node.id)}
+                        className={`w-full text-left p-3 transition flex items-center justify-between cursor-pointer ${
+                          isSelected
+                            ? 'bg-cyan-950/50 border-l-4 border-cyan-400 text-white'
+                            : 'hover:bg-slate-800/50 text-slate-300'
+                        }`}
+                      >
+                        <div className="min-w-0 pr-2">
+                          <div className="font-medium text-xs truncate flex items-center gap-1.5">
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isSource
+                                  ? 'bg-emerald-400 ring-2 ring-emerald-400/40'
+                                  : isDest
+                                  ? 'bg-rose-400 ring-2 ring-rose-400/40'
+                                  : isSelected
+                                  ? 'bg-amber-400 ring-2 ring-amber-400/30'
+                                  : 'bg-cyan-400'
+                              }`}
+                            />
+                            {node.name}
+                          </div>
+                          <div className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">
+                            ID: {node.id}
+                            {isSource && <span className="text-emerald-400 font-semibold ml-1.5">[START]</span>}
+                            {isDest && <span className="text-rose-400 font-semibold ml-1.5">[DEST]</span>}
+                          </div>
+                        </div>
+                        <div className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-400 shrink-0">
+                          [{node.x}, {node.y}, {node.z}]
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: Route Finder & Sequential Animation */}
+          {leftTab === 'route' && (
+            <div className="flex-1 flex flex-col min-h-0">
+              <RouteSelectorPanel
+                nodes={nodes}
+                sourceId={sourceId}
+                destinationId={destinationId}
+                onSelectSource={setSourceId}
+                onSelectDestination={setDestinationId}
+                onFindRoute={handleFindRoute}
+                onClearRoute={handleClearRoute}
+                onImportRouteResult={handleImportRouteResult}
+                isLoading={isEngineLoading}
+                routeResult={routeResult}
+                animationState={animationState}
               />
             </div>
-          </div>
-
-          {/* Node List Header */}
-          <div className="px-4 py-2 border-b border-slate-800/60 bg-slate-950/40 flex items-center justify-between text-[11px] font-semibold text-slate-400 uppercase">
-            <span>Campus Locations ({filteredNodes.length})</span>
-            <span className="text-[10px] font-mono text-slate-500">[X, Y, Z]</span>
-          </div>
-
-          {/* Node Scrollable List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-slate-800/40">
-            {filteredNodes.length === 0 ? (
-              <div className="p-6 text-center text-xs text-slate-500">No nodes match search.</div>
-            ) : (
-              filteredNodes.map((node) => {
-                const isSelected = node.id === selectedNodeId;
-                return (
-                  <button
-                    key={node.id}
-                    data-testid={`node-item-${node.id}`}
-                    onClick={() => setSelectedNodeId(node.id)}
-                    className={`w-full text-left p-3 transition flex items-center justify-between cursor-pointer ${
-                      isSelected
-                        ? 'bg-cyan-950/50 border-l-4 border-cyan-400 text-white'
-                        : 'hover:bg-slate-800/50 text-slate-300'
-                    }`}
-                  >
-                    <div className="min-w-0 pr-2">
-                      <div className="font-medium text-xs truncate flex items-center gap-1.5">
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            isSelected ? 'bg-amber-400 ring-2 ring-amber-400/30' : 'bg-cyan-400'
-                          }`}
-                        />
-                        {node.name}
-                      </div>
-                      <div className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">
-                        ID: {node.id}
-                      </div>
-                    </div>
-                    <div className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-slate-400 shrink-0">
-                      [{node.x}, {node.y}, {node.z}]
-                    </div>
-                  </button>
-                );
-              })
-            )}
-          </div>
+          )}
         </aside>
 
         {/* =========================================================================
@@ -252,7 +364,25 @@ export const App: React.FC = () => {
               </span>
             </div>
 
-            {debugMode && (
+            {routeResult?.found && (
+              <div className="bg-emerald-950/85 border border-emerald-500/60 text-emerald-200 px-3 py-1.5 rounded-md text-[11px] font-mono flex items-center gap-2 backdrop-blur shadow">
+                <Navigation className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                <span>
+                  ROUTE ACTIVE: {routeResult.source} &rarr; {routeResult.destination} ({routeResult.hops} Hops)
+                </span>
+                {routeResult.isNativeC ? (
+                  <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-cyan-900/80 text-cyan-300 border border-cyan-600/60 font-sans font-bold">
+                    NATIVE C ENGINE
+                  </span>
+                ) : routeResult.isSimulation ? (
+                  <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-amber-900/80 text-amber-300 border border-amber-600/60 font-sans font-bold">
+                    DEMO FIXTURE
+                  </span>
+                ) : null}
+              </div>
+            )}
+
+            {debugMode && !routeResult?.found && (
               <div className="bg-amber-950/70 border border-amber-600/60 text-amber-200 px-3 py-1 rounded-md text-[11px] font-mono flex items-center gap-2 backdrop-blur shadow">
                 <Crosshair className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
                 <span>DEBUG PLACEMENT ACTIVE • Labels Visible • Inspecting Coords</span>
@@ -270,6 +400,13 @@ export const App: React.FC = () => {
             showAxes={showAxes}
             showLabels={showLabels}
             debugMode={debugMode}
+            routePath={routeResult?.found ? routeResult.path : []}
+            sourceId={sourceId}
+            destinationId={destinationId}
+            illuminatedNodeIds={animationState.illuminatedNodeIds}
+            illuminatedEdgeKeys={animationState.illuminatedEdgeKeys}
+            activeNodeId={animationState.activeNodeId}
+            activeEdgeKey={animationState.activeEdgeKey}
           />
         </main>
 
@@ -300,6 +437,32 @@ export const App: React.FC = () => {
                   </div>
                   <div className="text-xs font-mono text-slate-400 mt-1">
                     Node ID: <span className="text-cyan-300 font-semibold">{selectedNode.id}</span>
+                  </div>
+
+                  {/* Quick-Set Route Origin & Destination */}
+                  <div className="grid grid-cols-2 gap-2 mt-3 pt-2.5 border-t border-slate-800/80">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSourceId(selectedNode.id);
+                        setLeftTab('route');
+                      }}
+                      className="px-2.5 py-1.5 rounded bg-emerald-950/60 border border-emerald-800/60 hover:bg-emerald-900/60 text-emerald-300 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    >
+                      <MapPin className="w-3 h-3 text-emerald-400" />
+                      Set as Start
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDestinationId(selectedNode.id);
+                        setLeftTab('route');
+                      }}
+                      className="px-2.5 py-1.5 rounded bg-rose-950/60 border border-rose-800/60 hover:bg-rose-900/60 text-rose-300 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                    >
+                      <Flag className="w-3 h-3 text-rose-400" />
+                      Set as Dest
+                    </button>
                   </div>
                 </div>
 

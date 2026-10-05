@@ -1,0 +1,13 @@
+{
+  "name": "ds-activity-2",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Campus Navigation Route Finder - Data Structures Mini Project with C Engine",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "test": "npm --prefix frontend test",
+    "build:engine": "gcc -Wall -O2 frontend/src/engine/routefinder.c -o frontend/src/engine/routefinder.exe",
+    "run:engine": "powershell -Command \"cd frontend/src/engine; .\\routefinder.exe; Copy-Item route_result.json -Destination ..\\..\\public\\route_result.json; Get-Content route_result.json\""
+  }
+}

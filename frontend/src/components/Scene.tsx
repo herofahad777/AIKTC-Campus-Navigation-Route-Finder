@@ -1,11 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid, GizmoHelper, GizmoViewport } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import * as THREE from 'three';
 import { NodeMesh } from './NodeMesh';
 import { Edges } from './Edges';
-import { NodeItem, ResolvedEdge } from '../lib/graphViewerUtils';
+import { NodeItem, ResolvedEdge, getRouteEdgeKeys } from '../lib/graphViewerUtils';
 
 interface SceneProps {
   nodes: NodeItem[];
@@ -16,6 +16,14 @@ interface SceneProps {
   showAxes: boolean;
   showLabels: boolean;
   debugMode: boolean;
+  // Route Navigation Props
+  routePath?: string[];
+  sourceId?: string | null;
+  destinationId?: string | null;
+  illuminatedNodeIds?: Set<string>;
+  illuminatedEdgeKeys?: Set<string>;
+  activeNodeId?: string | null;
+  activeEdgeKey?: string | null;
 }
 
 export interface CameraControlHandle {
@@ -34,11 +42,18 @@ export const Scene: React.FC<SceneProps> = ({
   showAxes,
   showLabels,
   debugMode,
+  routePath = [],
+  sourceId = null,
+  destinationId = null,
+  illuminatedNodeIds,
+  illuminatedEdgeKeys,
+  activeNodeId = null,
+  activeEdgeKey = null,
 }) => {
   const controlsRef = useRef<OrbitControlsType>(null);
 
   // Compute neighboring node IDs for selected node (direct edge partners)
-  const neighborIds = React.useMemo(() => {
+  const neighborIds = useMemo(() => {
     if (!selectedNode) return new Set<string>();
     const neighbors = new Set<string>();
     for (const re of resolvedEdges) {
@@ -52,6 +67,14 @@ export const Scene: React.FC<SceneProps> = ({
     }
     return neighbors;
   }, [selectedNode, resolvedEdges]);
+
+  // Derived sets for route highlighting
+  const isRouteActive = routePath.length > 0;
+  const routeWaypointSet = useMemo(() => new Set(routePath), [routePath]);
+  const activeRouteEdgeKeys = useMemo(
+    () => new Set(getRouteEdgeKeys(routePath)),
+    [routePath]
+  );
 
   return (
     <div className="relative w-full h-full bg-slate-950 overflow-hidden">
@@ -101,7 +124,7 @@ export const Scene: React.FC<SceneProps> = ({
             sectionSize={10}
             sectionThickness={1.2}
             sectionColor="#334155"
-            fadeDistance={75}
+            fadeDistance={100}
             fadeStrength={1.2}
             infiniteGrid
           />
@@ -123,7 +146,13 @@ export const Scene: React.FC<SceneProps> = ({
         </GizmoHelper>
 
         {/* Render Edges (Pathways) */}
-        <Edges resolvedEdges={resolvedEdges} selectedNode={selectedNode} />
+        <Edges
+          resolvedEdges={resolvedEdges}
+          selectedNode={selectedNode}
+          activeRouteEdgeKeys={activeRouteEdgeKeys}
+          illuminatedEdgeKeys={illuminatedEdgeKeys}
+          currentActiveEdgeKey={activeEdgeKey}
+        />
 
         {/* Render Nodes (Spheres + Labels) */}
         <group>
@@ -136,6 +165,12 @@ export const Scene: React.FC<SceneProps> = ({
               onSelect={onSelectNode}
               showLabels={showLabels}
               debugMode={debugMode}
+              isSource={node.id === sourceId}
+              isDestination={node.id === destinationId}
+              isRouteWaypoint={routeWaypointSet.has(node.id)}
+              isIlluminated={illuminatedNodeIds?.has(node.id)}
+              isCurrentStep={node.id === activeNodeId}
+              isRouteActive={isRouteActive}
             />
           ))}
         </group>

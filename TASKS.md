@@ -24,12 +24,22 @@
 - [x] Implement Debug Placement Mode (grid, axes, alignment checking, always-visible labels)
 - [x] Run Vitest test suite and verify all 23 unit tests pass
 - [x] Validate production build (`npm run build`)
+- [x] Conduct 2026 UI/UX best practices research across 6 core domains
+- [x] Author and install 6 project-level Antigravity skills in `.agents/skills/`
+- [x] Create formal UI/UX and Design System Implementation Plan (`docs/superpowers/plans/2026-10-05-uiux-skills-and-design-system.md`)
+- [x] Implement Source and Destination selection UI with swap, clear, and quick-set actions (`RouteSelectorPanel.tsx`)
+- [x] Implement asynchronous C Engine Adapter (`engineBridge.ts`) and mock route fixtures (`mock_route_result.json`) adhering to `RULES.md`
+- [x] Implement `useRouteAnimation` custom hook for sequential 3D path illumination of engine-returned paths
+- [x] Enhance 3D Scene components (`Edges.tsx`, `NodeMesh.tsx`, `NodeLabel.tsx`, `Scene.tsx`) with START/DEST badges, path glowing, and background network visibility
+- [x] Add automated unit and integration tests (44/44 tests passing across 5 test suites)
+- [x] Verify in browser with subagent and capture visual walkthrough artifacts
 
-## Phase 2: Future Scope (Exclusively Reserved for Manual C Implementation)
-The following tasks are strictly OUT OF SCOPE for this build and will be implemented manually in C by the project owner:
-- [ ] Manual implementation of Adjacency List graph structure in C (`engine/routefinder.c`)
-- [ ] Manual implementation of circular FIFO Queue in C
-- [ ] Manual implementation of Breadth-First Search (BFS) algorithm in C
-- [ ] Integration of JSON parser in C for node/edge loading
-- [ ] Route computation and traversal logic in C
-- [ ] Compilation pipeline linking C engine output to navigation clients
+## Phase 2: C Engine Implementation & Native Bridge (Completed)
+- [x] Manual implementation of Adjacency List graph structure in C (`frontend/src/engine/routefinder.c`)
+- [x] Manual implementation of FIFO Queue in C
+- [x] Manual implementation of Breadth-First Search (BFS) algorithm in C
+- [x] Integration of custom parser in C for node/edge loading (`nodes.json`, `edges.json`)
+- [x] Implement `route_request.json` workflow in C engine
+- [x] Implement `route_result.json` output workflow in C engine
+- [x] Connect compiled `routefinder.exe` binary in `frontend/src/engine/` to frontend file contract
+- [x] Relocate engine directory to `frontend/src/engine/` to conform with Vite project root boundaries

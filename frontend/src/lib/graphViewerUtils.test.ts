@@ -5,6 +5,8 @@ import {
   findNodeById,
   resolveEdgeEndpoints,
   validateGraphData,
+  getUndirectedEdgeKey,
+  getRouteEdgeKeys,
   NodeItem,
   EdgeItem,
 } from './graphViewerUtils';
@@ -143,6 +145,23 @@ describe('graphViewerUtils - Visualization Helpers (No Traversal)', () => {
       const selfWarning = warnings.find((w) => w.type === 'self_referencing_edge');
       expect(selfWarning).toBeDefined();
       expect(selfWarning?.message).toContain('Self-referencing');
+    });
+  });
+
+  describe('edge key helpers', () => {
+    it('generates canonical undirected edge keys regardless of parameter order', () => {
+      expect(getUndirectedEdgeKey('gate', 'library')).toBe('gate<->library');
+      expect(getUndirectedEdgeKey('library', 'gate')).toBe('gate<->library');
+    });
+
+    it('generates ordered array of undirected edge keys along a route path', () => {
+      const path = ['gate', 'library', 'cs_dept'];
+      expect(getRouteEdgeKeys(path)).toEqual(['gate<->library', 'cs_dept<->library']);
+    });
+
+    it('returns empty array when path has fewer than 2 nodes', () => {
+      expect(getRouteEdgeKeys([])).toEqual([]);
+      expect(getRouteEdgeKeys(['gate'])).toEqual([]);
     });
   });
 });

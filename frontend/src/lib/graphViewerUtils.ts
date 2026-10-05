@@ -189,3 +189,25 @@ export function validateGraphData(
 
   return warnings;
 }
+
+/**
+ * Generates an undirected canonical edge key for two node IDs.
+ * Format: "nodeA<->nodeB" where nodeA is lexicographically <= nodeB.
+ */
+export function getUndirectedEdgeKey(id1: string, id2: string): string {
+  const [a, b] = id1 < id2 ? [id1, id2] : [id2, id1];
+  return `${a}<->${b}`;
+}
+
+/**
+ * Returns an ordered array of undirected edge keys along a node ID path.
+ * e.g. ["gate", "library", "cs_dept"] -> ["gate<->library", "cs_dept<->library"]
+ */
+export function getRouteEdgeKeys(path: string[]): string[] {
+  if (!Array.isArray(path) || path.length < 2) return [];
+  const edgeKeys: string[] = [];
+  for (let i = 0; i < path.length - 1; i++) {
+    edgeKeys.push(getUndirectedEdgeKey(path[i], path[i + 1]));
+  }
+  return edgeKeys;
+}
