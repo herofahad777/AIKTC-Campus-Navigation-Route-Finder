@@ -19,6 +19,15 @@ function cEngineAutoRunnerPlugin(): Plugin {
     name: 'vite-plugin-c-engine-auto-runner',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+        res.setHeader('Access-Control-Allow-Headers', '*');
+        if (req.method === 'OPTIONS') {
+          res.statusCode = 204;
+          res.end();
+          return;
+        }
+
         const engineDir = path.resolve(import.meta.dirname, 'src', 'engine');
         const isWindows = process.platform === 'win32';
         const binaryName = isWindows ? 'routefinder.exe' : 'routefinder';
@@ -237,7 +246,11 @@ function cEngineAutoRunnerPlugin(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './',
   server: {
+    host: true,
+    allowedHosts: true,
+    cors: true,
     watch: {
       ignored: [
         '**/src/engine/*.json',
@@ -246,6 +259,11 @@ export default defineConfig({
         '**/src/data/edges.json',
       ],
     },
+  },
+  preview: {
+    host: true,
+    allowedHosts: true,
+    cors: true,
   },
   plugins: [
     tailwindcss(),

@@ -117,5 +117,278 @@
     "x": -25,
     "y": 0,
     "z": -5
+  },
+  {
+    "id": "divider_01_copy_copy_copy_copy",
+    "name": "Divider - 3F Stair Landing",
+    "x": -20,
+    "y": 15,
+    "z": -5
+  },
+  {
+    "id": "divider_south_server",
+    "name": "Divider - South West Wing",
+    "x": -30,
+    "y": 15,
+    "z": -5
+  },
+  {
+    "id": "divider_sw_corner",
+    "name": "Divider - South West Corner",
+    "x": -45,
+    "y": 15,
+    "z": -5
+  },
+  {
+    "id": "divider_west_mid",
+    "name": "Divider - West Corridor Mid",
+    "x": -45,
+    "y": 15,
+    "z": -20
+  },
+  {
+    "id": "divider_nw_corner",
+    "name": "Divider - North West Corner",
+    "x": -45,
+    "y": 15,
+    "z": -35
+  },
+  {
+    "id": "divider_north_stairs",
+    "name": "Divider - North West Wing",
+    "x": -15,
+    "y": 15,
+    "z": -35
+  },
+  {
+    "id": "divider_north_central",
+    "name": "Divider - North Central Passage",
+    "x": 0,
+    "y": 15,
+    "z": -35
+  },
+  {
+    "id": "divider_north_mid",
+    "name": "Divider - North East Wing",
+    "x": 25,
+    "y": 15,
+    "z": -35
+  },
+  {
+    "id": "divider_ne_corner",
+    "name": "Divider - North East Corner",
+    "x": 45,
+    "y": 15,
+    "z": -35
+  },
+  {
+    "id": "divider_east_mid",
+    "name": "Divider - East Corridor Mid",
+    "x": 45,
+    "y": 15,
+    "z": -20
+  },
+  {
+    "id": "divider_se_corner",
+    "name": "Divider - South East Corner",
+    "x": 45,
+    "y": 15,
+    "z": -5
+  },
+  {
+    "id": "divider_south_lobby",
+    "name": "Divider - South East Wing",
+    "x": 22,
+    "y": 15,
+    "z": -5
+  },
+  {
+    "id": "divider_south_central",
+    "name": "Divider - South Central Passage",
+    "x": 0,
+    "y": 15,
+    "z": -5
+  },
+  {
+    "id": "divider_lounge_south",
+    "name": "Divider - CO Admin Lounge South",
+    "x": 0,
+    "y": 15,
+    "z": -14
+  },
+  {
+    "id": "divider_lounge_north",
+    "name": "Divider - CO Admin Lounge North",
+    "x": 0,
+    "y": 15,
+    "z": -26
+  },
+  {
+    "id": "b403_ee_admin",
+    "name": "EE Admin Lounge (B-403)",
+    "x": -40,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b402_ee_lab",
+    "name": "EE Project Lab (B-402)",
+    "x": -33,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b401_ee_lab",
+    "name": "EE Project Lab (B-401)",
+    "x": -25,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b_server_room",
+    "name": "Server Room",
+    "x": -16,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b421_ns_lab",
+    "name": "NS LAB (B-421)",
+    "x": -8,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b420_esp_lab",
+    "name": "ESP LAB (B-420)",
+    "x": 6,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b_lobby_3f",
+    "name": "Lobby (3F)",
+    "x": 14,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b419_pp_lab",
+    "name": "PP LAB (B-419)",
+    "x": 24,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b418_co_lab",
+    "name": "CO Project Lab (B-418)",
+    "x": 37,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "b405_lh",
+    "name": "LH Block No (B-405)",
+    "x": -52,
+    "y": 15,
+    "z": -14
+  },
+  {
+    "id": "washroom_west_3f",
+    "name": "Washroom (West 3F)",
+    "x": -52,
+    "y": 15,
+    "z": -8
+  },
+  {
+    "id": "b406_lh",
+    "name": "LH Block No (B-406)",
+    "x": -52,
+    "y": 15,
+    "z": -26
+  },
+  {
+    "id": "b407_lh",
+    "name": "LH Block No (B-407)",
+    "x": -40,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "b408_lh",
+    "name": "LH Block No (B-408)",
+    "x": -30,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "b409_lh",
+    "name": "LH Block No (B-409)",
+    "x": -20,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "b410_seminar_hall",
+    "name": "Seminar Hall (B-410)",
+    "x": -9,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "stairs_north_3f",
+    "name": "North Staircase (3F)",
+    "x": -2,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "washroom_north_3f",
+    "name": "Washroom (North 3F)",
+    "x": 6,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "b413_se_lab",
+    "name": "SE LAB (B-413)",
+    "x": 16,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "b414_ai_lab",
+    "name": "AI LAB (B-414)",
+    "x": 28,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "b415_sd_lab",
+    "name": "SD LAB (B-415)",
+    "x": 40,
+    "y": 15,
+    "z": -40
+  },
+  {
+    "id": "b416_cwd_lab",
+    "name": "CWD LAB (B-416)",
+    "x": 52,
+    "y": 15,
+    "z": -27
+  },
+  {
+    "id": "b417_da_lab",
+    "name": "DA LAB (B-417)",
+    "x": 52,
+    "y": 15,
+    "z": -14
+  },
+  {
+    "id": "b_co_admin_lounge",
+    "name": "CO Admin Lounge",
+    "x": 10,
+    "y": 15,
+    "z": -20
   }
 ]

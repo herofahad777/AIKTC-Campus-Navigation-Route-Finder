@@ -50,5 +50,169 @@
   {
     "from": "div_2_copy2",
     "to": "divider_0"
+  },
+  {
+    "from": "stairs_l3",
+    "to": "divider_01_copy_copy_copy_copy"
+  },
+  {
+    "from": "divider_01_copy_copy_copy_copy",
+    "to": "divider_south_server"
+  },
+  {
+    "from": "divider_south_server",
+    "to": "divider_sw_corner"
+  },
+  {
+    "from": "divider_01_copy_copy_copy_copy",
+    "to": "divider_south_central"
+  },
+  {
+    "from": "divider_south_central",
+    "to": "divider_south_lobby"
+  },
+  {
+    "from": "divider_south_lobby",
+    "to": "divider_se_corner"
+  },
+  {
+    "from": "divider_sw_corner",
+    "to": "divider_west_mid"
+  },
+  {
+    "from": "divider_west_mid",
+    "to": "divider_nw_corner"
+  },
+  {
+    "from": "divider_nw_corner",
+    "to": "divider_north_stairs"
+  },
+  {
+    "from": "divider_north_stairs",
+    "to": "divider_north_central"
+  },
+  {
+    "from": "divider_north_central",
+    "to": "divider_north_mid"
+  },
+  {
+    "from": "divider_north_mid",
+    "to": "divider_ne_corner"
+  },
+  {
+    "from": "divider_ne_corner",
+    "to": "divider_east_mid"
+  },
+  {
+    "from": "divider_east_mid",
+    "to": "divider_se_corner"
+  },
+  {
+    "from": "divider_south_central",
+    "to": "divider_lounge_south"
+  },
+  {
+    "from": "divider_lounge_south",
+    "to": "b_co_admin_lounge"
+  },
+  {
+    "from": "b_co_admin_lounge",
+    "to": "divider_lounge_north"
+  },
+  {
+    "from": "divider_lounge_north",
+    "to": "divider_north_central"
+  },
+  {
+    "from": "divider_sw_corner",
+    "to": "b403_ee_admin"
+  },
+  {
+    "from": "divider_sw_corner",
+    "to": "washroom_west_3f"
+  },
+  {
+    "from": "divider_south_server",
+    "to": "b402_ee_lab"
+  },
+  {
+    "from": "divider_south_server",
+    "to": "b401_ee_lab"
+  },
+  {
+    "from": "divider_01_copy_copy_copy_copy",
+    "to": "b_server_room"
+  },
+  {
+    "from": "divider_south_central",
+    "to": "b421_ns_lab"
+  },
+  {
+    "from": "divider_south_central",
+    "to": "b420_esp_lab"
+  },
+  {
+    "from": "divider_south_lobby",
+    "to": "b_lobby_3f"
+  },
+  {
+    "from": "divider_south_lobby",
+    "to": "b419_pp_lab"
+  },
+  {
+    "from": "divider_se_corner",
+    "to": "b418_co_lab"
+  },
+  {
+    "from": "divider_west_mid",
+    "to": "b405_lh"
+  },
+  {
+    "from": "divider_west_mid",
+    "to": "b406_lh"
+  },
+  {
+    "from": "divider_nw_corner",
+    "to": "b407_lh"
+  },
+  {
+    "from": "divider_north_stairs",
+    "to": "b408_lh"
+  },
+  {
+    "from": "divider_north_stairs",
+    "to": "b409_lh"
+  },
+  {
+    "from": "divider_north_stairs",
+    "to": "b410_seminar_hall"
+  },
+  {
+    "from": "divider_north_central",
+    "to": "stairs_north_3f"
+  },
+  {
+    "from": "divider_north_central",
+    "to": "washroom_north_3f"
+  },
+  {
+    "from": "divider_north_mid",
+    "to": "b413_se_lab"
+  },
+  {
+    "from": "divider_north_mid",
+    "to": "b414_ai_lab"
+  },
+  {
+    "from": "divider_ne_corner",
+    "to": "b415_sd_lab"
+  },
+  {
+    "from": "divider_east_mid",
+    "to": "b416_cwd_lab"
+  },
+  {
+    "from": "divider_east_mid",
+    "to": "b417_da_lab"
   }
 ]
