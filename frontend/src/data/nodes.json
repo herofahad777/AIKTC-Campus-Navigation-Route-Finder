@@ -1,80 +1,10 @@
 [
   {
-    "id": "gate",
-    "name": "Main Campus Gate",
+    "id": "gate_2",
+    "name": "Gate 2",
     "x": 0,
     "y": 0,
     "z": 20
-  },
-  {
-    "id": "admin",
-    "name": "Administration Block",
-    "x": 0,
-    "y": 0,
-    "z": 10
-  },
-  {
-    "id": "library",
-    "name": "Library",
-    "x": 10,
-    "y": 0,
-    "z": 5
-  },
-  {
-    "id": "cs_dept",
-    "name": "Computer Science & IT Block",
-    "x": 20,
-    "y": 0,
-    "z": -10
-  },
-  {
-    "id": "eng_quad",
-    "name": "Engineering Quadrangle",
-    "x": 12,
-    "y": 0,
-    "z": -18
-  },
-  {
-    "id": "science_complex",
-    "name": "Science Complex",
-    "x": -18,
-    "y": 0,
-    "z": -15
-  },
-  {
-    "id": "cafeteria",
-    "name": "Campus Cafeteria",
-    "x": -8,
-    "y": 0,
-    "z": 2
-  },
-  {
-    "id": "student_center",
-    "name": "Student Activity Center (L2)",
-    "x": -14,
-    "y": 4,
-    "z": 12
-  },
-  {
-    "id": "sports_arena",
-    "name": "Sports Arena & Pavilion",
-    "x": 24,
-    "y": 0,
-    "z": 15
-  },
-  {
-    "id": "hostel_north",
-    "name": "North Residence Hall",
-    "x": -5,
-    "y": 0,
-    "z": -28
-  },
-  {
-    "id": "auditorium",
-    "name": "Main Auditorium",
-    "x": -12,
-    "y": 1,
-    "z": -2
   },
   {
     "id": "gate_3",
@@ -82,5 +12,110 @@
     "x": 20,
     "y": 0,
     "z": 20
+  },
+  {
+    "id": "road_entry",
+    "name": "Road Entry",
+    "x": 0,
+    "y": 0,
+    "z": 30
+  },
+  {
+    "id": "road_entry_copy",
+    "name": "Road Entry (Copy)",
+    "x": 20,
+    "y": 0,
+    "z": 30
+  },
+  {
+    "id": "road_entry_copy_copy",
+    "name": "Road Entry (Copy) (Copy)",
+    "x": -20,
+    "y": 0,
+    "z": 30
+  },
+  {
+    "id": "gate_1",
+    "name": "Gate 1",
+    "x": -20,
+    "y": 0,
+    "z": 20
+  },
+  {
+    "id": "div_2",
+    "name": "Gate 2 Divider",
+    "x": 0,
+    "y": 0,
+    "z": 15
+  },
+  {
+    "id": "div_1",
+    "name": "Gate 1 Divider",
+    "x": -20,
+    "y": 0,
+    "z": 15
+  },
+  {
+    "id": "div_3",
+    "name": "Gate 3 Divider",
+    "x": 20,
+    "y": 0,
+    "z": 15
+  },
+  {
+    "id": "div_2_copy",
+    "name": "Gate 2 Divider (Copy)",
+    "x": -10,
+    "y": 0,
+    "z": 15
+  },
+  {
+    "id": "div_2_copy2",
+    "name": "Gate 2 Divider (Copy)",
+    "x": 0,
+    "y": 0,
+    "z": -5
+  },
+  {
+    "id": "divider_0",
+    "name": "Divider",
+    "x": -10,
+    "y": 0,
+    "z": -5
+  },
+  {
+    "id": "stairs_l0",
+    "name": "Stairs Level 0",
+    "x": -20,
+    "y": 0,
+    "z": 0
+  },
+  {
+    "id": "stairs_l1",
+    "name": "Stairs Level 1",
+    "x": -20,
+    "y": 5,
+    "z": 0
+  },
+  {
+    "id": "stairs_l2",
+    "name": "Stairs Level 2",
+    "x": -20,
+    "y": 10,
+    "z": 0
+  },
+  {
+    "id": "stairs_l3",
+    "name": "Stairs Level 3",
+    "x": -20,
+    "y": 15,
+    "z": 0
+  },
+  {
+    "id": "divider_01",
+    "name": "Divider",
+    "x": -25,
+    "y": 0,
+    "z": -5
   }
 ]

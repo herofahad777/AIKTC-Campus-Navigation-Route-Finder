@@ -538,38 +538,40 @@ export const NodeEditorPanel: React.FC<NodeEditorPanelProps> = ({
           <label className="text-[10px] text-slate-400 block">
             Connect <span className="text-white font-mono font-semibold">{selectedNode.id}</span> to:
           </label>
-          <div className="flex gap-1.5">
-            <select
-              value={targetNodeId}
-              onChange={(e) => setTargetNodeId(e.target.value)}
-              data-testid="edge-target-select"
-              className="flex-1 px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-500 font-medium"
-            >
-              <option value="">Select destination node...</option>
-              {allNodes
-                .filter((n) => n.id !== selectedNode.id)
-                .map((n) => {
-                  const isConnected = edges.some(
-                    (e) =>
-                      (e.from === selectedNode.id && e.to === n.id) ||
-                      (e.from === n.id && e.to === selectedNode.id)
-                  );
-                  return (
-                    <option key={n.id} value={n.id} disabled={isConnected}>
-                      {n.name} ({n.id}) {isConnected ? '— Connected' : ''}
-                    </option>
-                  );
-                })}
-            </select>
+          <div className="flex flex-col gap-2">
+            <div className="relative w-full min-w-0">
+              <select
+                value={targetNodeId}
+                onChange={(e) => setTargetNodeId(e.target.value)}
+                data-testid="edge-target-select"
+                className="w-full min-w-0 max-w-full truncate px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:outline-none focus:border-emerald-500 font-medium"
+              >
+                <option value="">Select destination node...</option>
+                {allNodes
+                  .filter((n) => n.id !== selectedNode.id)
+                  .map((n) => {
+                    const isConnected = edges.some(
+                      (e) =>
+                        (e.from === selectedNode.id && e.to === n.id) ||
+                        (e.from === n.id && e.to === selectedNode.id)
+                    );
+                    return (
+                      <option key={n.id} value={n.id} disabled={isConnected}>
+                        {n.name} ({n.id}) {isConnected ? '— Connected' : ''}
+                      </option>
+                    );
+                  })}
+              </select>
+            </div>
             <button
               type="submit"
               disabled={!targetNodeId}
               data-testid="add-edge-btn"
-              className="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-semibold text-xs flex items-center gap-1 transition cursor-pointer shrink-0 shadow-sm"
+              className="w-full py-1.5 px-3 rounded bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shadow-sm"
               title="Add a bidirectional campus pathway"
             >
               <Link2 className="w-3.5 h-3.5" />
-              Connect
+              Connect Pathway
             </button>
           </div>
         </form>

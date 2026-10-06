@@ -1,58 +1,54 @@
 [
   {
-    "from": "gate",
-    "to": "library"
+    "from": "road_entry",
+    "to": "gate_2"
   },
   {
-    "from": "gate",
-    "to": "admin"
+    "from": "road_entry_copy_copy",
+    "to": "road_entry"
   },
   {
-    "from": "admin",
-    "to": "library"
+    "from": "road_entry_copy",
+    "to": "road_entry"
   },
   {
-    "from": "admin",
-    "to": "cafeteria"
+    "from": "road_entry_copy_copy",
+    "to": "gate_1"
   },
   {
-    "from": "gate",
-    "to": "sports_arena"
+    "from": "gate_2",
+    "to": "div_2"
   },
   {
-    "from": "admin",
-    "to": "sports_arena"
+    "from": "div_2_copy",
+    "to": "div_1"
   },
   {
-    "from": "library",
-    "to": "cs_dept"
+    "from": "divider_01",
+    "to": "stairs_l0"
   },
   {
-    "from": "cs_dept",
-    "to": "eng_quad"
+    "from": "stairs_l0",
+    "to": "stairs_l1"
   },
   {
-    "from": "eng_quad",
-    "to": "hostel_north"
+    "from": "stairs_l1",
+    "to": "stairs_l2"
   },
   {
-    "from": "science_complex",
-    "to": "hostel_north"
+    "from": "stairs_l2",
+    "to": "stairs_l3"
   },
   {
-    "from": "cafeteria",
-    "to": "auditorium"
+    "from": "divider_0",
+    "to": "divider_01"
   },
   {
-    "from": "auditorium",
-    "to": "science_complex"
+    "from": "div_2",
+    "to": "div_2_copy2"
   },
   {
-    "from": "cafeteria",
-    "to": "student_center"
-  },
-  {
-    "from": "admin",
-    "to": "student_center"
+    "from": "div_2_copy2",
+    "to": "divider_0"
   }
 ]

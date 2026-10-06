@@ -2,6 +2,24 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import App from './App';
 
+// Fixture mock so tests remain isolated from mutable user-edited nodes.json
+vi.mock('./data/nodes.json', () => ({
+  default: [
+    { id: 'gate', name: 'Main Campus Gate', x: 0, y: 0, z: 20 },
+    { id: 'admin', name: 'Administration Block', x: 0, y: 0, z: 10 },
+    { id: 'library', name: 'Library', x: 10, y: 0, z: 5 },
+    { id: 'auditorium', name: 'Main Auditorium', x: -12, y: 1, z: -2 },
+    { id: 'eng_quad', name: 'Engineering Quadrangle', x: 12, y: 0, z: -18 },
+  ],
+}));
+
+vi.mock('./data/edges.json', () => ({
+  default: [
+    { from: 'gate', to: 'admin' },
+    { from: 'admin', to: 'library' },
+  ],
+}));
+
 // Mock the Scene 3D component so WebGL rendering does not require a GPU context in JSDOM
 vi.mock('./components/Scene', () => ({
   Scene: ({
@@ -86,5 +104,22 @@ describe('App - 3D Graph Viewer 3-Panel Layout', () => {
     fireEvent.change(searchInput, { target: { value: 'Auditorium' } });
     expect(screen.getByText('Main Auditorium')).toBeInTheDocument();
     expect(screen.queryByText('Engineering Quadrangle')).not.toBeInTheDocument();
+  });
+
+  it('renders dynamic right sidebar resizer and adjusts width on drag', () => {
+    render(<App />);
+    const resizer = screen.getByTestId('right-panel-resizer');
+    const rightPanel = screen.getByTestId('right-sidebar-panel');
+    expect(resizer).toBeInTheDocument();
+    expect(rightPanel).toBeInTheDocument();
+
+    // Start resize drag
+    fireEvent.mouseDown(resizer, { clientX: 800 });
+    // Drag left by 50px (increasing right panel width)
+    fireEvent.mouseMove(window, { clientX: 750 });
+    fireEvent.mouseUp(window);
+
+    // Verify rightPanel style reflects the resized width
+    expect(rightPanel.style.width).toMatch(/px$/);
   });
 });

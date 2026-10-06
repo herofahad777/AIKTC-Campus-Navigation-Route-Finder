@@ -55,7 +55,10 @@ export const App: React.FC = () => {
   const { nodes, edges } = nodeEditor;
 
   // Viewer and Debug State
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>('library');
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(() => {
+    if (initialTransformedNodes.some((n) => n.id === 'library')) return 'library';
+    return initialTransformedNodes[0]?.id ?? null;
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [debugMode, setDebugMode] = useState(true);
   const [showGrid, setShowGrid] = useState(true);
@@ -68,10 +71,71 @@ export const App: React.FC = () => {
   const [leftTab, setLeftTab] = useState<'locations' | 'route'>('locations');
 
   // Route Navigation State (Strictly decoupled from traversal algorithms per RULES.md)
-  const [sourceId, setSourceId] = useState<string | null>('gate');
-  const [destinationId, setDestinationId] = useState<string | null>('hostel_north');
+  const [sourceId, setSourceId] = useState<string | null>(() => {
+    if (initialTransformedNodes.some((n) => n.id === 'gate')) return 'gate';
+    return initialTransformedNodes[0]?.id ?? null;
+  });
+  const [destinationId, setDestinationId] = useState<string | null>(() => {
+    if (initialTransformedNodes.some((n) => n.id === 'hostel_north')) return 'hostel_north';
+    if (initialTransformedNodes.some((n) => n.id === 'library')) return 'library';
+    return initialTransformedNodes.length > 1 ? initialTransformedNodes[1]?.id : null;
+  });
   const [isEngineLoading, setIsEngineLoading] = useState(false);
   const [routeResult, setRouteResult] = useState<RouteResult | null>(null);
+
+  // Dynamic Resizable Right Sidebar State (persisted to localStorage)
+  const [rightPanelWidth, setRightPanelWidth] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('campus_nav_right_panel_width');
+      if (saved) {
+        const val = parseInt(saved, 10);
+        if (!isNaN(val) && val >= 280 && val <= 700) {
+          return val;
+        }
+      }
+    } catch {
+      // ignore localStorage error
+    }
+    return 360; // Clean, generous default
+  });
+
+  const [isResizingRight, setIsResizingRight] = useState(false);
+
+  const startResizingRight = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      setIsResizingRight(true);
+
+      const startX = e.clientX;
+      const startWidth = rightPanelWidth;
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        // Dragging left (smaller clientX) increases width of right panel
+        const deltaX = startX - moveEvent.clientX;
+        const maxAllowed = Math.min(650, window.innerWidth - 120);
+        const newWidth = Math.max(280, Math.min(maxAllowed, startWidth + deltaX));
+        setRightPanelWidth(newWidth);
+      };
+
+      const handleMouseUp = () => {
+        setIsResizingRight(false);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+        setRightPanelWidth((current) => {
+          try {
+            localStorage.setItem('campus_nav_right_panel_width', current.toString());
+          } catch {
+            // ignore
+          }
+          return current;
+        });
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    },
+    [rightPanelWidth]
+  );
 
   // Sequential 3D Animation Hook (Visualizes path returned by engine only)
   const animationState = useRouteAnimation(routeResult?.path, 400);
@@ -144,7 +208,11 @@ export const App: React.FC = () => {
   }, [animationState]);
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-slate-950 text-slate-100 overflow-hidden font-sans">
+    <div
+      className={`flex flex-col h-screen w-screen bg-slate-950 text-slate-100 overflow-hidden font-sans ${
+        isResizingRight ? 'select-none cursor-col-resize' : ''
+      }`}
+    >
       {/* TOP HEADER */}
       <header className="h-14 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur px-4 flex items-center justify-between z-20 shrink-0">
         <div className="flex items-center gap-3">
@@ -443,7 +511,25 @@ export const App: React.FC = () => {
         {/* =========================================================================
             RIGHT PANEL: Inspector, Coordinates, Validation Warnings / Node Editor
            ========================================================================= */}
-        <aside className="w-88 border-l border-slate-800 bg-slate-900/70 backdrop-blur-md flex flex-col shrink-0 z-10 overflow-y-auto">
+        {/* Resize Divider Handle for Right Sidebar */}
+        <div
+          onMouseDown={startResizingRight}
+          data-testid="right-panel-resizer"
+          className={`w-1.5 hover:w-2 transition-all cursor-col-resize shrink-0 z-20 flex items-center justify-center select-none group ${
+            isResizingRight
+              ? 'bg-cyan-500 w-2 shadow-[0_0_12px_rgba(6,182,212,0.6)]'
+              : 'bg-transparent hover:bg-cyan-500/40 border-l border-slate-800/80'
+          }`}
+          title="Drag to resize panel"
+        >
+          <div className="w-0.5 h-8 rounded-full bg-slate-700/80 group-hover:bg-cyan-400 transition-colors pointer-events-none" />
+        </div>
+
+        <aside
+          style={{ width: `${rightPanelWidth}px` }}
+          data-testid="right-sidebar-panel"
+          className="border-l border-slate-800 bg-slate-900/70 backdrop-blur-md flex flex-col shrink-0 z-10 overflow-y-auto overflow-x-hidden min-w-0 max-w-[calc(100vw-80px)]"
+        >
           {/* Debug Mode Tabs: Inspector vs Node Editor */}
           {debugMode && (
             <div className="flex border-b border-slate-800 bg-slate-950/80 p-1 gap-1 shrink-0">
@@ -639,7 +725,7 @@ export const App: React.FC = () => {
                       </div>
                     </div>
                     {isOriginOffsetActive(campusOrigin) && (
-                      <div className="mt-2 p-1.5 px-2.5 rounded bg-purple-950/40 border border-purple-800/50 text-[10px] text-purple-300 flex items-center justify-between font-mono">
+                      <div className="col-span-3 mt-2 p-1.5 px-2.5 rounded bg-purple-950/40 border border-purple-800/50 text-[10px] text-purple-300 flex items-center justify-between font-mono">
                         <span className="flex items-center gap-1">
                           <Compass className="w-3 h-3 text-purple-400" />
                           <span>Main Axis Offset:</span>

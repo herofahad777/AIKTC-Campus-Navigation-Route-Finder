@@ -64,3 +64,12 @@
 - [x] Implement attached pathways list with 1-click disconnect/delete actions in the editor
 - [x] Implement `addEdge` and `deleteEdge` in `useNodeEditor.ts` with bidirectional duplicate prevention
 - [x] Add unit and integration tests across 9 test suites (74/74 tests passing)
+
+## Phase 6: Dynamic Resizable Right Sidebar & Responsive Edge Creator (Completed)
+- [x] Implement interactive drag splitter handle (`cursor-col-resize`) between Center 3D Scene and Right Sidebar allowing continuous width adjustment from 280px to 650px
+- [x] Persist user's customized sidebar width across reloads via `localStorage` (`campus_nav_right_panel_width`)
+- [x] Add viewport-aware clamping (`max-w-[calc(100vw-80px)]` and `overflow-x-hidden`) to guarantee the right sidebar never overflows the browser window on any screen resolution
+- [x] Refactor Edge Creator & Pathways connection form to a responsive stacked layout with `w-full min-w-0 truncate` on destination select and full-width `Connect Pathway` button, preventing layout blowout from long node names
+- [x] Ensure all nested inspector and editor components (coordinate grids, action buttons, warnings) fluidly adapt to dynamic width changes
+- [x] Achieve 100% test pass rate across all 9 test suites (75/75 tests passing) and clean production build
+

@@ -2,6 +2,17 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import App from './App';
 
+// Fixture mock for deterministic route navigation tests
+vi.mock('./data/nodes.json', () => ({
+  default: [
+    { id: 'gate', name: 'Main Campus Gate', x: 0, y: 0, z: 20 },
+    { id: 'library', name: 'Library', x: 10, y: 0, z: 5 },
+    { id: 'admin', name: 'Administration Block', x: 0, y: 0, z: 10 },
+    { id: 'cs_dept', name: 'Computer Science & IT Block', x: 20, y: 0, z: -10 },
+    { id: 'hostel_north', name: 'North Residence Hall', x: -5, y: 0, z: -28 },
+  ],
+}));
+
 // Mock Scene to avoid WebGL requirements in JSDOM
 vi.mock('./components/Scene', () => ({
   Scene: ({

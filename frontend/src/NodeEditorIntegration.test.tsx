@@ -2,6 +2,21 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import App from './App';
 
+// Fixture mock for deterministic node editor integration tests
+vi.mock('./data/nodes.json', () => ({
+  default: [
+    { id: 'library', name: 'Library', x: 10, y: 0, z: 5 },
+    { id: 'gate', name: 'Main Campus Gate', x: 0, y: 0, z: 20 },
+    { id: 'auditorium', name: 'Main Auditorium', x: -12, y: 1, z: -2 },
+  ],
+}));
+
+vi.mock('./data/edges.json', () => ({
+  default: [
+    { from: 'gate', to: 'library' },
+  ],
+}));
+
 // Mock Scene to avoid WebGL / Canvas in JSDOM
 vi.mock('./components/Scene', () => ({
   Scene: ({
