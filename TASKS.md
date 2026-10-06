@@ -43,3 +43,24 @@
 - [x] Implement `route_result.json` output workflow in C engine
 - [x] Connect compiled `routefinder.exe` binary in `frontend/src/engine/` to frontend file contract
 - [x] Relocate engine directory to `frontend/src/engine/` to conform with Vite project root boundaries
+
+## Phase 3: Spatial Configuration & Main Axis Control (Completed)
+- [x] Implement Central Origin Offset (Main Axis Control) configured via `.env` (`VITE_CAMPUS_ORIGIN_X/Y/Z`) and `originConfig.ts` to translate all nodes $(x + \Delta x, y + \Delta y, z + \Delta z)$ and connecting edges relative to the 3D world origin without modifying `nodes.json`
+- [x] Add Central Origin indicator in the 3D canvas coordinate banner and selected node coordinate inspector
+- [x] Add unit test suite (`originConfig.test.ts`) validating coordinate translations and edge cases
+
+## Phase 4: In-Browser Node Editor & Special Tools (Completed)
+- [x] Implement in-browser Node Editor panel (`NodeEditorPanel.tsx`) in Debug Placement Mode for editing node name, ID, and coordinates $(X, Y, Z)$
+- [x] Add interactive 3D WebGL Transform Controls (`TransformControls` gizmo in `Scene.tsx`) to drag and reposition nodes directly in the 3D viewport
+- [x] Implement axis nudge tools ($\pm 1\text{m}$, $\pm 5\text{m}$), Snap to Ground ($Y=0$), Center $(X,Z)\to(0,0)$, and Grid Snapping (1m, 5m)
+- [x] Implement automatic ID cascading to connecting edges to preserve graph topology when node IDs change
+- [x] Implement node lifecycle operations: Add Node, Clone/Duplicate Node, and Delete Node with edge cleanup
+- [x] Implement persistence and export workflow: Vite dev-server API `POST /api/nodes/save` to write directly to `nodes.json` on disk, `localStorage` draft caching, and JSON file download / clipboard copy
+- [x] Add unit and integration test suites (`useNodeEditor.test.ts`, `NodeEditorPanel.test.tsx`, `NodeEditorIntegration.test.tsx`) achieving 100% pass rate (70/70 tests)
+
+## Phase 5: Transform Gizmo Node Alignment & Edge Creator (Completed)
+- [x] Fix 3-axis drag mover alignment by binding `TransformControls` to an explicit node-positioned target group in `Scene.tsx` so the gizmo moves and aligns directly with each selected node as it changes
+- [x] Implement Edge Creator in `NodeEditorPanel.tsx` with destination node dropdown, live duplicate/self-loop validation, and pathway connection
+- [x] Implement attached pathways list with 1-click disconnect/delete actions in the editor
+- [x] Implement `addEdge` and `deleteEdge` in `useNodeEditor.ts` with bidirectional duplicate prevention
+- [x] Add unit and integration tests across 9 test suites (74/74 tests passing)

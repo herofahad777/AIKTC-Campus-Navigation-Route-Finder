@@ -17,9 +17,11 @@ import {
   Route,
   Navigation,
   Flag,
+  Edit3,
 } from 'lucide-react';
 import { Scene } from './components/Scene';
 import { RouteSelectorPanel } from './components/RouteSelectorPanel';
+import { NodeEditorPanel } from './components/NodeEditorPanel';
 import rawNodes from './data/nodes.json';
 import rawEdges from './data/edges.json';
 import {
@@ -32,10 +34,25 @@ import {
 } from './lib/graphViewerUtils';
 import { requestRoute, clearRoute, RouteResult } from './lib/engineBridge';
 import { useRouteAnimation } from './hooks/useRouteAnimation';
+import { useNodeEditor } from './hooks/useNodeEditor';
+import {
+  campusOrigin,
+  applyOriginOffsetToAll,
+  isOriginOffsetActive,
+} from './config/originConfig';
 
 export const App: React.FC = () => {
-  const nodes = rawNodes as NodeItem[];
-  const edges = rawEdges as EdgeItem[];
+  const initialTransformedNodes = useMemo(
+    () => applyOriginOffsetToAll(rawNodes as NodeItem[], campusOrigin),
+    []
+  );
+
+  const nodeEditor = useNodeEditor({
+    initialNodes: initialTransformedNodes,
+    initialEdges: rawEdges as EdgeItem[],
+  });
+
+  const { nodes, edges } = nodeEditor;
 
   // Viewer and Debug State
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>('library');
@@ -44,6 +61,8 @@ export const App: React.FC = () => {
   const [showGrid, setShowGrid] = useState(true);
   const [showAxes, setShowAxes] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
+  const [snapToGrid, setSnapToGrid] = useState(false);
+  const [rightTab, setRightTab] = useState<'inspector' | 'editor'>('inspector');
 
   // Left Sidebar Mode: 'locations' or 'route'
   const [leftTab, setLeftTab] = useState<'locations' | 'route'>('locations');
@@ -362,6 +381,15 @@ export const App: React.FC = () => {
               <span className="flex items-center gap-1 text-blue-400 font-semibold">
                 <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" /> -Z: North
               </span>
+              {isOriginOffsetActive(campusOrigin) && (
+                <>
+                  <span className="text-slate-600">|</span>
+                  <span className="flex items-center gap-1 text-purple-300 font-semibold" title="Central Origin Main Axis Offset configured via .env">
+                    <Compass className="w-3.5 h-3.5 text-purple-400" />
+                    Origin: [{campusOrigin.x}, {campusOrigin.y}, {campusOrigin.z}]
+                  </span>
+                </>
+              )}
             </div>
 
             {routeResult?.found && (
@@ -400,6 +428,8 @@ export const App: React.FC = () => {
             showAxes={showAxes}
             showLabels={showLabels}
             debugMode={debugMode}
+            onUpdateNodePosition={nodeEditor.updateNodePosition}
+            snapToGrid={snapToGrid}
             routePath={routeResult?.found ? routeResult.path : []}
             sourceId={sourceId}
             destinationId={destinationId}
@@ -411,22 +441,117 @@ export const App: React.FC = () => {
         </main>
 
         {/* =========================================================================
-            RIGHT PANEL: Inspector, Coordinates, Validation Warnings
+            RIGHT PANEL: Inspector, Coordinates, Validation Warnings / Node Editor
            ========================================================================= */}
         <aside className="w-88 border-l border-slate-800 bg-slate-900/70 backdrop-blur-md flex flex-col shrink-0 z-10 overflow-y-auto">
-          {/* Section: Selected Node Inspector */}
-          <div className="p-4 border-b border-slate-800">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+          {/* Debug Mode Tabs: Inspector vs Node Editor */}
+          {debugMode && (
+            <div className="flex border-b border-slate-800 bg-slate-950/80 p-1 gap-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => setRightTab('inspector')}
+                data-testid="right-tab-inspector"
+                className={`flex-1 py-1.5 px-3 rounded text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                  rightTab === 'inspector'
+                    ? 'bg-slate-800 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                }`}
+              >
                 <Crosshair className="w-3.5 h-3.5 text-cyan-400" />
-                Node Inspector
-              </span>
-              {selectedNode && (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/60">
-                  SELECTED
-                </span>
-              )}
+                <span>Inspector</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRightTab('editor')}
+                data-testid="right-tab-editor"
+                className={`flex-1 py-1.5 px-3 rounded text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                  rightTab === 'editor'
+                    ? 'bg-slate-800 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                }`}
+              >
+                <Edit3 className="w-3.5 h-3.5 text-amber-400" />
+                <span>Node Editor</span>
+                {nodeEditor.hasUnsavedChanges && (
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse ml-0.5" />
+                )}
+              </button>
             </div>
+          )}
+
+          {debugMode && rightTab === 'editor' ? (
+            <NodeEditorPanel
+              selectedNode={selectedNode}
+              allNodes={nodes}
+              edges={edges}
+              hasUnsavedChanges={nodeEditor.hasUnsavedChanges}
+              onUpdateNode={(oldId, updates, cascade) => {
+                const res = nodeEditor.updateNode(oldId, updates, cascade);
+                if (res.success && updates.id && selectedNodeId === oldId) {
+                  setSelectedNodeId(updates.id);
+                  if (sourceId === oldId) setSourceId(updates.id);
+                  if (destinationId === oldId) setDestinationId(updates.id);
+                }
+                return res;
+              }}
+              onUpdatePosition={nodeEditor.updateNodePosition}
+              onNudge={nodeEditor.nudgeNode}
+              onSnapToGround={nodeEditor.snapNodeToGround}
+              onSnapToGrid={nodeEditor.snapNodeToGrid}
+              onAddNode={(custom) => {
+                const n = nodeEditor.addNode(custom);
+                setSelectedNodeId(n.id);
+                return n;
+              }}
+              onDuplicateNode={(id) => {
+                const clone = nodeEditor.duplicateNode(id);
+                if (clone) setSelectedNodeId(clone.id);
+                return clone;
+              }}
+              onDeleteNode={(id, purge) => {
+                const res = nodeEditor.deleteNode(id, purge);
+                if (res && selectedNodeId === id) setSelectedNodeId(null);
+                if (sourceId === id) setSourceId(null);
+                if (destinationId === id) setDestinationId(null);
+                return res;
+              }}
+              onAddEdge={nodeEditor.addEdge}
+              onDeleteEdge={nodeEditor.deleteEdge}
+              onRevertNode={nodeEditor.revertNode}
+              onRevertAll={nodeEditor.revertAll}
+              onSaveToDisk={nodeEditor.saveToDisk}
+              onExportJson={nodeEditor.exportJson}
+              onSelectNode={(node) => setSelectedNodeId(node ? node.id : null)}
+              snapToGrid={snapToGrid}
+              onToggleSnapToGrid={setSnapToGrid}
+            />
+          ) : (
+            <>
+              {/* Section: Selected Node Inspector */}
+              <div className="p-4 border-b border-slate-800">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Crosshair className="w-3.5 h-3.5 text-cyan-400" />
+                    Node Inspector
+                  </span>
+                  {selectedNode && (
+                    <div className="flex items-center gap-1.5">
+                      {debugMode && (
+                        <button
+                          type="button"
+                          onClick={() => setRightTab('editor')}
+                          className="text-[10px] font-medium px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800/80 hover:bg-amber-900 transition flex items-center gap-1"
+                        >
+                          <Edit3 className="w-2.5 h-2.5" />
+                          Edit Node
+                        </button>
+                      )}
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/60">
+                        SELECTED
+                      </span>
+                    </div>
+                  )}
+                </div>
 
             {selectedNode ? (
               <div className="space-y-4">
@@ -513,6 +638,15 @@ export const App: React.FC = () => {
                           : 'Campus Equator'}
                       </div>
                     </div>
+                    {isOriginOffsetActive(campusOrigin) && (
+                      <div className="mt-2 p-1.5 px-2.5 rounded bg-purple-950/40 border border-purple-800/50 text-[10px] text-purple-300 flex items-center justify-between font-mono">
+                        <span className="flex items-center gap-1">
+                          <Compass className="w-3 h-3 text-purple-400" />
+                          <span>Main Axis Offset:</span>
+                        </span>
+                        <span>Δ[{campusOrigin.x}, {campusOrigin.y}, {campusOrigin.z}]</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -634,7 +768,9 @@ export const App: React.FC = () => {
               </div>
             )}
           </div>
-        </aside>
+        </>
+      )}
+    </aside>
       </div>
     </div>
   );

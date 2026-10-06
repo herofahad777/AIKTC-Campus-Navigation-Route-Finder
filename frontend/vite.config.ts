@@ -195,6 +195,40 @@ function cEngineAutoRunnerPlugin(): Plugin {
           return;
         }
 
+        // Endpoint: POST /api/nodes/save - Saves modified nodes & edges to disk
+        if (req.url === '/api/nodes/save' && req.method === 'POST') {
+          let body = '';
+          req.on('data', (chunk) => {
+            body += chunk;
+          });
+          req.on('end', () => {
+            try {
+              const { nodes, edges } = JSON.parse(body);
+              if (!Array.isArray(nodes)) {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ success: false, error: 'Invalid nodes array' }));
+                return;
+              }
+              const nodesFilePath = path.resolve(import.meta.dirname, 'src', 'data', 'nodes.json');
+              fs.writeFileSync(nodesFilePath, JSON.stringify(nodes, null, 2) + '\n', 'utf-8');
+
+              if (Array.isArray(edges)) {
+                const edgesFilePath = path.resolve(import.meta.dirname, 'src', 'data', 'edges.json');
+                fs.writeFileSync(edgesFilePath, JSON.stringify(edges, null, 2) + '\n', 'utf-8');
+              }
+
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ success: true, count: nodes.length }));
+            } catch (err) {
+              res.statusCode = 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ success: false, error: (err as Error).message }));
+            }
+          });
+          return;
+        }
+
         next();
       });
     },
@@ -205,7 +239,12 @@ function cEngineAutoRunnerPlugin(): Plugin {
 export default defineConfig({
   server: {
     watch: {
-      ignored: ['**/src/engine/*.json', '**/src/engine/*.exe'],
+      ignored: [
+        '**/src/engine/*.json',
+        '**/src/engine/*.exe',
+        '**/src/data/nodes.json',
+        '**/src/data/edges.json',
+      ],
     },
   },
   plugins: [

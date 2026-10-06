@@ -350,7 +350,7 @@ export const RouteSelectorPanel: React.FC<RouteSelectorPanelProps> = ({
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  {routeResult.isNativeC ? 'Native C BFS Route' : 'Engine Path Returned'}
+                  Engine Path Returned {routeResult.isNativeC ? '(Native C)' : ''}
                 </span>
                 <div className="flex items-center gap-1.5">
                   {routeResult.isNativeC && (

@@ -1,6 +1,6 @@
 import React, { useRef, useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid, GizmoHelper, GizmoViewport } from '@react-three/drei';
+import { OrbitControls, Grid, GizmoHelper, GizmoViewport, TransformControls } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsType } from 'three-stdlib';
 import * as THREE from 'three';
 import { NodeMesh } from './NodeMesh';
@@ -16,6 +16,8 @@ interface SceneProps {
   showAxes: boolean;
   showLabels: boolean;
   debugMode: boolean;
+  onUpdateNodePosition?: (id: string, x: number, y: number, z: number) => void;
+  snapToGrid?: boolean;
   // Route Navigation Props
   routePath?: string[];
   sourceId?: string | null;
@@ -33,6 +35,50 @@ export interface CameraControlHandle {
   setIsometricView: () => void;
 }
 
+interface NodeTransformGizmoProps {
+  node: NodeItem;
+  onUpdateNodePosition?: (id: string, x: number, y: number, z: number) => void;
+  snapToGrid?: boolean;
+}
+
+const NodeTransformGizmo: React.FC<NodeTransformGizmoProps> = ({
+  node,
+  onUpdateNodePosition,
+  snapToGrid,
+}) => {
+  const [target, setTarget] = React.useState<THREE.Group | null>(null);
+
+  // Synchronize target position when node coordinates update
+  React.useLayoutEffect(() => {
+    if (target) {
+      target.position.set(node.x, node.y, node.z);
+    }
+  }, [target, node.id, node.x, node.y, node.z]);
+
+  return (
+    <>
+      <group ref={setTarget} position={[node.x, node.y, node.z]} />
+      {target && (
+        <TransformControls
+          object={target}
+          mode="translate"
+          size={0.75}
+          translationSnap={snapToGrid ? 1 : undefined}
+          onObjectChange={() => {
+            const pos = target.position;
+            onUpdateNodePosition?.(
+              node.id,
+              Math.round(pos.x * 10) / 10,
+              Math.round(pos.y * 10) / 10,
+              Math.round(pos.z * 10) / 10
+            );
+          }}
+        />
+      )}
+    </>
+  );
+};
+
 export const Scene: React.FC<SceneProps> = ({
   nodes,
   resolvedEdges,
@@ -42,6 +88,8 @@ export const Scene: React.FC<SceneProps> = ({
   showAxes,
   showLabels,
   debugMode,
+  onUpdateNodePosition,
+  snapToGrid = false,
   routePath = [],
   sourceId = null,
   destinationId = null,
@@ -174,6 +222,16 @@ export const Scene: React.FC<SceneProps> = ({
             />
           ))}
         </group>
+
+        {/* 3D Transform Gizmo for in-scene node dragging in Debug Mode */}
+        {debugMode && selectedNode && (
+          <NodeTransformGizmo
+            key={selectedNode.id}
+            node={selectedNode}
+            onUpdateNodePosition={onUpdateNodePosition}
+            snapToGrid={snapToGrid}
+          />
+        )}
       </Canvas>
     </div>
   );

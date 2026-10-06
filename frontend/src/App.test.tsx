@@ -57,8 +57,8 @@ describe('App - 3D Graph Viewer 3-Panel Layout', () => {
     // Inspector should now show Main Campus Gate details
     expect(screen.getByText('ID: gate')).toBeInTheDocument();
     expect(screen.getByText('Spatial Coordinates')).toBeInTheDocument();
-    // Gate has z = 25 (South)
-    expect(screen.getByText('25m South')).toBeInTheDocument();
+    // Gate has z > 0 (South)
+    expect(screen.getByText(/\dm South/i)).toBeInTheDocument();
   });
 
   it('toggles Debug Placement Mode', () => {
